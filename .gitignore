@@ -12,6 +12,8 @@ __pycache__/
 /.cache
 /.pytest_cache
 /.mypy_cache
+.idea/
+.DS_store
 
 /doc/_apidoc/
 /build

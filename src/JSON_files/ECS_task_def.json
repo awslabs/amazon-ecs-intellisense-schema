@@ -1,0 +1,16 @@
+{
+    "containerDefinitions": "ContainerDefinitions",
+    "cpu": "String",
+    "executionRoleArn": "String",
+    "family": "String",
+    "ipcMode": "IpcMode",
+    "memory": "String",
+    "networkMode": "NetworkMode",
+    "pidMode": "PidMode",
+    "placementConstraints": "TaskDefinitionPlacementConstraints",
+    "proxyConfiguration": "ProxyConfiguration",
+    "requiresCompatibilities": "CompatibilityList",
+    "tags": "Tags",
+    "taskRoleArn": "String",
+    "volumes": "VolumeList"
+}
