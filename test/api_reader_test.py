@@ -1,9 +1,8 @@
-import unittest, sys, os, json
-sys.path.insert(0, '../src')
-from api_reader import *
+import unittest
+from src.api_reader import *
 
 
-class TestTaskDefMethods(unittest.TestCase):
+class TestReferenceMethods(unittest.TestCase):
 
     def setUp(self):
         self.test_api_model = {
@@ -60,8 +59,8 @@ class TestTaskDefMethods(unittest.TestCase):
             }
         }
 
-    def test_reg_task_def(self):
-        self.assertEqual(get_task_def(self.test_api_model, 'shapes', 'RegisterTaskDefinitionRequest'), ({
+    def test_register_task_def(self):
+        self.assertEqual(get_references(self.test_api_model, 'RegisterTaskDefinitionRequest'), ({
             "containerDefinitions": "ContainerDefinitions",
             "cpu": "String",
             "executionRoleArn": "String",
@@ -78,8 +77,8 @@ class TestTaskDefMethods(unittest.TestCase):
             "volumes": "VolumeList"
         }, ['family', 'containerDefinitions']))
 
-    def test_reg_task_def_networkmode_type_fail(self):
-        self.assertNotEqual(get_task_def(self.test_api_model, 'shapes', 'RegisterTaskDefinitionRequest'), ({
+    def test_register_task_def_networkmode_type_fail(self):
+        self.assertNotEqual(get_references(self.test_api_model, 'RegisterTaskDefinitionRequest'), ({
             "containerDefinitions": "ContainerDefinitions",
             "cpu": "String",
             "executionRoleArn": "String",
@@ -96,8 +95,8 @@ class TestTaskDefMethods(unittest.TestCase):
             "volumes": "VolumeList"
         }, ['family', 'containerDefinitions']))
 
-    def test_reg_task_def__family_required_fail(self):
-        self.assertNotEqual(get_task_def(self.test_api_model, 'shapes', 'RegisterTaskDefinitionRequest'), ({
+    def test_register_task_def_family_required_fail(self):
+        self.assertNotEqual(get_references(self.test_api_model, 'RegisterTaskDefinitionRequest'), ({
             "containerDefinitions": "ContainerDefinitions",
             "cpu": "String",
             "executionRoleArn": "String",
@@ -115,7 +114,7 @@ class TestTaskDefMethods(unittest.TestCase):
         }, ['containerDefinitions']))
 
     def test_create_service_req(self):
-        self.assertEqual(get_task_def(self.test_api_model, 'shapes', 'CreateServiceRequest'), ({
+        self.assertEqual(get_references(self.test_api_model, 'CreateServiceRequest'), ({
             "cluster": "String",
             "serviceName": "String",
             "taskDefinition": "String",
@@ -139,7 +138,7 @@ class TestTaskDefMethods(unittest.TestCase):
           }, ["serviceName"]))
 
     def test_create_service_req_extra_parameter_fail(self):
-        self.assertNotEqual(get_task_def(self.test_api_model, 'shapes', 'CreateServiceRequest'), ({
+        self.assertNotEqual(get_references(self.test_api_model, 'CreateServiceRequest'), ({
             "cluster": "String",
             "serviceName": "String",
             "taskDefinition": "String",
