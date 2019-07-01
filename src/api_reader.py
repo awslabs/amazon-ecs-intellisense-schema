@@ -10,7 +10,7 @@ def get_references(api, operation):
     Gets the operation's references from api.json. Includes metadata such as required
     parameters needed for the schema
 
-    Ex: get_references(api, 'RegisterTaskDefinitionRequest')
+    Example: get_references(api, 'RegisterTaskDefinitionRequest')
     :param api: the api.json file read into JSON format
     :param operation: the type of task the user wants to use
     :return: all of the references, the required references
@@ -32,10 +32,11 @@ def write_references(refs, operation, file_path):
     """
     Writes to a file containing the references
 
-    Ex: write_references(reference, 'RegisterTaskDefinitionRequest', json_file_path)
+    Example: write_references(reference, 'RegisterTaskDefinitionRequest', json_file_path)
     :param refs: the references we received from parsing the api.json
     :param operation: the type of task the user wants to use
     :param file_path: the file path where it writes the task definitions parameters
     """
-    with open(os.path.join(file_path, operation + '_operation.json'), 'w') as outfile:
+    os.makedirs(file_path, exist_ok=True)
+    with open(os.path.join(file_path, operation + '_refs.json'), 'w') as outfile:
         json.dump(refs, outfile, indent=4)

@@ -10,7 +10,7 @@ def get_description(documentation, reference, operation):
     """
     Gets the description for each of the references from the doc.json
 
-    Ex: get_description(documentation, reference, 'RegisterTaskDefinitionRequest')
+    Example: get_description(documentation, reference, 'RegisterTaskDefinitionRequest')
     :param documentation: the docs.json file read into JSON format
     :param reference: all of the references inside the requested operation
     :param operation: the type of task the user wants to to use for their needs
@@ -34,10 +34,11 @@ def write_description(description, operation, file_path):
     """
     Writes to a file containing the description for the operation's references
 
-    Ex: write_description(description, 'RegisterTaskDefinitionRequest', json_file_path)
+    Example: write_description(description, 'RegisterTaskDefinitionRequest', json_file_path)
     :param description: the data containing the description for each reference
     :param operation: the type of task the user wants to use
     :param file_path: the file path where it writes our description
     """
+    os.makedirs(file_path, exist_ok=True)
     with open(os.path.join(file_path, operation + '_doc.json'), 'w') as outfile:
         json.dump(description, outfile, indent=4)
