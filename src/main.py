@@ -32,6 +32,3 @@ if __name__ == '__main__':
 
     schema = get_schema(reference, description, required, api)
     write_schema(schema, operation, schema_file_path)
-
-
-

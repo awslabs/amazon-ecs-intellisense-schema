@@ -24,9 +24,10 @@ def get_description(documentation, reference, operation):
         if documentation['shapes'][reference[key]]['refs'][refs_value] is None:
             description[key] = "No description currently available"
         else:
-            soup = BeautifulSoup(documentation['shapes'][reference[key]]['refs'][refs_value], 'html5lib')
+            anchor_tag_removal = documentation['shapes'][reference[key]]['refs'][refs_value]\
+                .replace("<a href=\"", "").replace("\">", " ")
+            soup = BeautifulSoup(anchor_tag_removal, 'lxml')
             description[key] = soup.get_text()
-
     return description
 
 
