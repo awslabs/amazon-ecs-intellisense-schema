@@ -60,7 +60,7 @@ class TestReferenceMethods(unittest.TestCase):
         }
 
     def test_register_task_def(self):
-        self.assertEqual(get_references(self.test_api_model, 'RegisterTaskDefinitionRequest'), ({
+        self.assertEqual(get_members(self.test_api_model, 'RegisterTaskDefinitionRequest'), ({
             "containerDefinitions": "ContainerDefinitions",
             "cpu": "String",
             "executionRoleArn": "String",
@@ -78,7 +78,7 @@ class TestReferenceMethods(unittest.TestCase):
         }, ['family', 'containerDefinitions']))
 
     def test_register_task_def_networkmode_type_fail(self):
-        self.assertNotEqual(get_references(self.test_api_model, 'RegisterTaskDefinitionRequest'), ({
+        self.assertNotEqual(get_members(self.test_api_model, 'RegisterTaskDefinitionRequest'), ({
             "containerDefinitions": "ContainerDefinitions",
             "cpu": "String",
             "executionRoleArn": "String",
@@ -96,7 +96,7 @@ class TestReferenceMethods(unittest.TestCase):
         }, ['family', 'containerDefinitions']))
 
     def test_register_task_def_family_required_fail(self):
-        self.assertNotEqual(get_references(self.test_api_model, 'RegisterTaskDefinitionRequest'), ({
+        self.assertNotEqual(get_members(self.test_api_model, 'RegisterTaskDefinitionRequest'), ({
             "containerDefinitions": "ContainerDefinitions",
             "cpu": "String",
             "executionRoleArn": "String",
@@ -114,7 +114,7 @@ class TestReferenceMethods(unittest.TestCase):
         }, ['containerDefinitions']))
 
     def test_create_service_req(self):
-        self.assertEqual(get_references(self.test_api_model, 'CreateServiceRequest'), ({
+        self.assertEqual(get_members(self.test_api_model, 'CreateServiceRequest'), ({
             "cluster": "String",
             "serviceName": "String",
             "taskDefinition": "String",
@@ -138,7 +138,7 @@ class TestReferenceMethods(unittest.TestCase):
           }, ["serviceName"]))
 
     def test_create_service_req_extra_parameter_fail(self):
-        self.assertNotEqual(get_references(self.test_api_model, 'CreateServiceRequest'), ({
+        self.assertNotEqual(get_members(self.test_api_model, 'CreateServiceRequest'), ({
             "cluster": "String",
             "serviceName": "String",
             "taskDefinition": "String",

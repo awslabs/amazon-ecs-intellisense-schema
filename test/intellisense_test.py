@@ -1,11 +1,11 @@
 import unittest
-
-from src.schema_writer import *
+from src.intellisense import IntellisenseSchema
 
 
 class TestSchemaMethods(unittest.TestCase):
 
     def setUp(self):
+
         self.test_api_model = {
             "shapes": {
                 "HTTP": {
@@ -28,10 +28,10 @@ class TestSchemaMethods(unittest.TestCase):
                 "GetAPetRequest": {
                     "type": "structure",
                     "required": [
-                        "rabbits"
+                        "Furry"
                     ],
                     "members": {
-                        "rabbits": {
+                        "Furry": {
                             "shape": "Rabbits"
                         }
                     }
@@ -43,7 +43,7 @@ class TestSchemaMethods(unittest.TestCase):
                     ],
                     "members": {
                         "family": {"shape": "String"},
-                        "taskRoleArn": {"shape": "String"}
+                        "proxyConfiguration": {"shape": "String"}
                     }
                 },
                 "CPU": {
@@ -71,18 +71,74 @@ class TestSchemaMethods(unittest.TestCase):
             }
 
         }
+        self.test_doc_model = {
+            "shapes": {
+                "String": {
+                    "refs": {
+                        "RegisterTaskDefinitionRequest$family": "The family name",
+                        "RegisterTaskDefinitionRequest$proxyConfiguration": None
+                    }
+                },
+                "CPU": {
+                    "refs": {
+                        "HTTP$power": "The launch type on which to run your task. For more information, see "
+                                      "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html "
+                                      "Amazon ECS Launch Types in the Amazon Elastic Container Service Developer Guide."
+                    }
+                },
+                "Password": {
+                    "refs": {
+                        "OneMember$family": None
+                    }
+                },
+                "Rabbits": {
+                    "refs": {
+                        "GetAPetRequest$Furry": "Want a carrot?"
+                    }
+                }
+            }
+        }
+
+        self.intellisense = IntellisenseSchema(self.test_api_model, self.test_doc_model)
+
+    def test_family_required(self):
+
+        members = {'family': 'String', 'proxyConfiguration': 'String'}
+        required = ['family']
+        operation = 'RegisterTaskDefinitionRequest'
+
+        expected = {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "family": {
+                    "description": "The family name",
+                    "type": "string"
+                },
+                "proxyConfiguration": {
+                    "description": "No description available",
+                    "type": "string"
+                }
+            },
+            "required": ['family']
+        }
+
+        self.assertEqual(self.intellisense.build(members, required, operation), expected)
 
     def test_recursive_rabbit(self):
-        dummy_reference = {'rabbits': 'Rabbits'}
-        dummy_required = ['rabbits']
-        dummy_description = {'rabbits': 'HELLO'}
+        members = {'Furry': 'Rabbits'}
+        required = ['Furry']
+        operation = 'GetAPetRequest'
 
-        self.assertEqual(get_schema(dummy_reference, dummy_description, dummy_required, self.test_api_model), {
+        self.maxDiff=None
+
+        expected = {
              "$schema": "http://json-schema.org/draft-07/schema#",
              "type": "object",
              "additionalProperties": False,
              "properties": {
-                 "rabbits": {
+                 "Furry": {
                      "additionalProperties": False,
                      "type": "array",
                      "items": {
@@ -92,21 +148,20 @@ class TestSchemaMethods(unittest.TestCase):
                              "Anyone"
                          ]
                      },
-                     "description": "HELLO"
+                     "description": "Want a carrot?"
                  }
              },
-             "required": ['rabbits']
-         })
+             "required": ['Furry']
+         }
+
+        self.assertEqual(self.intellisense.build(members, required, operation), expected)
 
     def test_http_description_with_enum_values(self):
-        dummy_reference = {'power': 'CPU'}
-        dummy_description = {'power': 'The launch type on which to run your task. For more information, see '
-                                      'https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html '
-                                      'Amazon ECS Launch Types in the '
-                                      'Amazon Elastic Container Service Developer Guide.'}
-        dummy_required = []
+        members = {'power': 'CPU'}
+        required = []
+        operation = 'HTTP'
 
-        self.assertEqual(get_schema(dummy_reference, dummy_description, dummy_required, self.test_api_model), {
+        expected = {
              "$schema": "http://json-schema.org/draft-07/schema#",
              "type": "object",
              "additionalProperties": False,
@@ -120,58 +175,23 @@ class TestSchemaMethods(unittest.TestCase):
                  }
              },
              "required": []
-         })
+         }
 
-    def test_family_required(self):
-        dummy_reference = {'family': 'String', 'taskRoleArn': 'String'}
-        dummy_description = {'family': 'The family name', 'taskRoleArn': 'No description currently available'}
-        dummy_required = ['family']
+        self.assertEqual(self.intellisense.build(members, required, operation), expected)
 
-        self.assertEqual(get_schema(dummy_reference, dummy_description, dummy_required, self.test_api_model), {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "type": "object",
-            "additionalProperties": False,
-            "properties": {
-                "family": {
-                    "description": "The family name",
-                    "type": "string"
-                },
-                "taskRoleArn": {
-                    "description": "No description currently available",
-                    "type": "string"
-                }
-            },
-            "required": ['family']
-        })
-        self.assertNotEqual(get_schema(dummy_reference, dummy_description, dummy_required, self.test_api_model), {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "type": "object",
-            "additionalProperties": False,
-            "properties": {
-                "family": {
-                    "description": "The family name",
-                    "type": "string"
-                },
-                "taskRoleArn": {
-                    "description": "No description currently available",
-                    "type": "string"
-                }
-            },
-            "required": ['family', 'taskRoleArn']
-        })
 
     def test_one_member_with_min_max_pattern(self):
-        dummy_reference = {'family': 'Password'}
-        dummy_description = {'family': 'No description currently available'}
-        dummy_required = []
+        members = {'family': 'Password'}
+        required = []
+        operation = "OneMember"
 
-        self.assertEqual(get_schema(dummy_reference, dummy_description, dummy_required, self.test_api_model), {
+        expected = {
              "$schema": "http://json-schema.org/draft-07/schema#",
              "type": "object",
              "additionalProperties": False,
              "properties": {
                  "family": {
-                     "description": "No description currently available",
+                     "description": "No description available",
                      "type": "string",
                      "minLength": 0,
                      "maxLength": 15,
@@ -179,20 +199,9 @@ class TestSchemaMethods(unittest.TestCase):
                  },
              },
              "required": []
-         })
-        self.assertNotEqual(get_schema(dummy_reference, dummy_description, dummy_required, self.test_api_model), {
-             "$schema": "http://json-schema.org/draft-07/schema#",
-             "type": "object",
-             "additionalProperties": False,
-             "properties": {
-                 "family": {
-                     "description": "No description currently available",
-                     "type": "string",
-                     "minLength": 0,
-                 },
-             },
-             "required": []
-         })
+         }
+
+        self.assertEqual(self.intellisense.build(members, required, operation), expected)
 
 
 if __name__ == '__main__':
