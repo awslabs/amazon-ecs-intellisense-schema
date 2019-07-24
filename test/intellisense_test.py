@@ -5,6 +5,8 @@ from src.intellisense import IntellisenseSchema
 class TestSchemaMethods(unittest.TestCase):
 
     def setUp(self):
+        self.test_schema_version = 'v1.0.0'
+        self.test_sdk_go_version = 'v1.12.1'
 
         self.test_api_model = {
             "shapes": {
@@ -99,7 +101,8 @@ class TestSchemaMethods(unittest.TestCase):
             }
         }
 
-        self.intellisense = IntellisenseSchema(self.test_api_model, self.test_doc_model)
+        self.intellisense = IntellisenseSchema(self.test_api_model, self.test_doc_model,
+                                               self.test_schema_version, self.test_sdk_go_version)
 
     def test_family_required(self):
 
@@ -109,6 +112,9 @@ class TestSchemaMethods(unittest.TestCase):
 
         expected = {
             "$schema": "http://json-schema.org/draft-07/schema#",
+            "description": "Intellisense for Amazon ECS Task Definition schema version {}, "
+                           "based on AWS SDK for Go version {}."
+                           .format(self.test_schema_version, self.test_sdk_go_version),
             "type": "object",
             "additionalProperties": False,
             "properties": {
@@ -131,12 +137,15 @@ class TestSchemaMethods(unittest.TestCase):
         required = ['Furry']
         operation = 'GetAPetRequest'
 
-        self.maxDiff=None
+        self.maxDiff = None
 
         expected = {
              "$schema": "http://json-schema.org/draft-07/schema#",
              "type": "object",
              "additionalProperties": False,
+             "description": "Intellisense for Amazon ECS Task Definition schema version {}, "
+                            "based on AWS SDK for Go version {}."
+                            .format(self.test_schema_version, self.test_sdk_go_version),
              "properties": {
                  "Furry": {
                      "additionalProperties": False,
@@ -165,6 +174,9 @@ class TestSchemaMethods(unittest.TestCase):
              "$schema": "http://json-schema.org/draft-07/schema#",
              "type": "object",
              "additionalProperties": False,
+             "description": "Intellisense for Amazon ECS Task Definition schema version {}, "
+                            "based on AWS SDK for Go version {}."
+                            .format(self.test_schema_version, self.test_sdk_go_version),
              "properties": {
                  "power": {
                      "type": "integer",
@@ -189,6 +201,9 @@ class TestSchemaMethods(unittest.TestCase):
              "$schema": "http://json-schema.org/draft-07/schema#",
              "type": "object",
              "additionalProperties": False,
+             "description": "Intellisense for Amazon ECS Task Definition schema version {}, "
+                            "based on AWS SDK for Go version {}."
+                            .format(self.test_schema_version, self.test_sdk_go_version),
              "properties": {
                  "family": {
                      "description": "No description available",

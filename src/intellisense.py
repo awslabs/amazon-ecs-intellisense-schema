@@ -21,14 +21,20 @@ class IntellisenseSchema:
         'pattern': 'pattern',
     }
 
-    def __init__(self, api, doc):
+    def __init__(self, api, doc, schema_version, sdk_go_version):
         """
         Constructor for the Intellisense Schema class, to initialize the api and doc variables
         :param api: the api.json file
         :param doc: the doc.json file
+        :param schema_version: the version number for this schema file
+        :param sdk_go_version: the version number for AWS SDK Go
+        See:
+        https://github.com/aws/aws-sdk-go/releases
         """
         self.api = api
         self.doc = doc
+        self.schema_version = schema_version
+        self.sdk_go_version = sdk_go_version
 
     def build(self, members, required, operation):
         """
@@ -45,6 +51,8 @@ class IntellisenseSchema:
             "properties": {},
             "required": required,
             "additionalProperties": False,  # Error checks against misspellings or invalid parameters
+            "description": "Intellisense for Amazon ECS Task Definition schema version {}, "
+                           "based on AWS SDK for Go version {}.".format(self.schema_version, self.sdk_go_version)
         }
 
         for name, shape in members.items():
@@ -107,9 +115,9 @@ class IntellisenseSchema:
                 elif shape_value['type'] == 'map':
                     schema[current]['type'] = 'object'
                     schema[current]['properties'] = {}
-                    schema[current]['properties']['keyName'] = {"type": "string"}
-                    schema[current]['description'] = sanitize(self.doc['shapes']
-                                                               [refs_value]['refs'][parent+'$'+current])
+                    schema[current]['properties']['insert-key'] = {"type": "string"}
+                    schema[current]['description'] = sanitize(
+                        self.doc['shapes'][refs_value]['refs'][parent+'$'+current])
                 else:
                     schema[current]['type'] = shape_value['type']
             elif element == 'member':

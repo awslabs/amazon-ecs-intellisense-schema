@@ -6,7 +6,7 @@ import sys
 import json
 from src.api_reader import get_members
 from src.intellisense import IntellisenseSchema
-
+from src.version import schema_version, sdk_go_version
 
 if __name__ == '__main__':
     model_dir = os.path.join(os.path.dirname(__file__), "model")
@@ -22,7 +22,7 @@ if __name__ == '__main__':
         sys.exit('Operation "{op}" not found under "shapes"'.format(op=operation))
 
     reference, required = get_members(api, operation)
-    intellisense = IntellisenseSchema(api, doc)
+    intellisense = IntellisenseSchema(api, doc, schema_version, sdk_go_version)
     schema = intellisense.build(reference, required, operation)
 
     schema_dir = os.path.join(model_dir, "schema")
