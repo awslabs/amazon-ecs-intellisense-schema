@@ -1,6 +1,6 @@
-# Amazon ECS Intellisense Schema
+# Amazon ECS IntelliSense Schema
 
-This package is to provide IntelliSense experience for users when writing ECS Task Definition in their Visual Studio Code or JetBrains IDEs. It does so by parsing ECS model files from the AWS SDK for Go. With these files, the package generates a JSON schema file to provide IntelliSense which provides code completion, documentation look up, and error checking. Instructions to [build](#how-to-run-this-tool) and enable IntelliSense are down below.
+This package is to provide an intelligent code completion (IntelliSense) experience for users when writing an Amazon ECS task definition in their Visual Studio Code or JetBrains IDEs. It does so by parsing the Amazon ECS model files from the AWS SDK for Go. With these files, the package generates a JSON schema file that provides code completion, documentation lookup, and error checking. Instructions to [build](#how-to-run-this-tool) and [enable IntelliSense](#how-do-i-set-it-up) are down below.
 
 ## What does an integration look like?
 Here is a VSCode setup integration example:  
@@ -49,7 +49,7 @@ Here is a VSCode setup integration example:
 ## How to run this tool?
 1. Install dependencies with `pip install -r requirements.txt`
 2. Run `python3 src/main.py`  
-NOTE: If you run into ModuleNotFoundError: No module named 'src'. Then, run `export PYTHONPATH="${PYTHONPATH}:/path/to/src/"`
+NOTE: If you run into `ModuleNotFoundError: No module named 'src'`. Then, run `export PYTHONPATH="${PYTHONPATH}:/path/to/src/"`
 3. The schema should be generated under `./src/model/schema/`
 
 ## License
