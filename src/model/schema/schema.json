@@ -11,7 +11,7 @@
             "type": "string"
         },
         "executionRoleArn": {
-            "description": "The Amazon Resource Name (ARN) of the task execution role that the Amazon ECS container agent and the Docker daemon can assume.",
+            "description": "The Amazon Resource Name (ARN) of the task execution role that grants the Amazon ECS container agent permission to make AWS API calls on your behalf. The task execution IAM role is required depending on the requirements of your task. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_execution_IAM_role.html Amazon ECS task execution IAM role in the Amazon Elastic Container Service Developer Guide.",
             "type": "string"
         },
         "networkMode": {
@@ -53,7 +53,7 @@
                         ]
                     },
                     "cpu": {
-                        "description": "The number of cpu units reserved for the container. This parameter maps to CpuShares in the https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate Create a container section of the https://docs.docker.com/engine/api/v1.35/ Docker Remote API and the --cpu-shares option to https://docs.docker.com/engine/reference/run/ docker run. This field is optional for tasks using the Fargate launch type, and the only requirement is that the total amount of CPU reserved for all containers within a task be lower than the task-level cpu value.  You can determine the number of CPU units that are available per EC2 instance type by multiplying the vCPUs listed for that instance type on the http://aws.amazon.com/ec2/instance-types/ Amazon EC2 Instances detail page by 1,024.  For example, if you run a single-container task on a single-core instance type with 512 CPU units specified for that container, and that is the only task running on the container instance, that container could use the full 1,024 CPU unit share at any given time. However, if you launched another copy of the same task on that container instance, each task would be guaranteed a minimum of 512 CPU units when needed, and each container could float to higher CPU usage if the other container was not using it, but if both tasks were 100% active all of the time, they would be limited to 512 CPU units. Linux containers share unallocated CPU units with other containers on the container instance with the same ratio as their allocated amount. For example, if you run a single-container task on a single-core instance type with 512 CPU units specified for that container, and that is the only task running on the container instance, that container could use the full 1,024 CPU unit share at any given time. However, if you launched another copy of the same task on that container instance, each task would be guaranteed a minimum of 512 CPU units when needed, and each container could float to higher CPU usage if the other container was not using it, but if both tasks were 100% active all of the time, they would be limited to 512 CPU units. On Linux container instances, the Docker daemon on the container instance uses the CPU value to calculate the relative CPU share ratios for running containers. For more information, see https://docs.docker.com/engine/reference/run/#cpu-share-constraint CPU share constraint in the Docker documentation. The minimum valid CPU share value that the Linux kernel allows is 2. However, the CPU parameter is not required, and you can use CPU values below 2 in your container definitions. For CPU values below 2 (including null), the behavior varies based on your Amazon ECS container agent version:    Agent versions less than or equal to 1.1.0: Null and zero CPU values are passed to Docker as 0, which Docker then converts to 1,024 CPU shares. CPU values of 1 are passed to Docker as 1, which the Linux kernel converts to two CPU shares.    Agent versions greater than or equal to 1.2.0: Null, zero, and CPU values of 1 are passed to Docker as 2.   On Windows container instances, the CPU limit is enforced as an absolute limit, or a quota. Windows containers only have access to the specified amount of CPU that is described in the task definition.",
+                        "description": "The number of cpu units reserved for the container. This parameter maps to CpuShares in the https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate Create a container section of the https://docs.docker.com/engine/api/v1.35/ Docker Remote API and the --cpu-shares option to https://docs.docker.com/engine/reference/run/ docker run. This field is optional for tasks using the Fargate launch type, and the only requirement is that the total amount of CPU reserved for all containers within a task be lower than the task-level cpu value.  You can determine the number of CPU units that are available per EC2 instance type by multiplying the vCPUs listed for that instance type on the http://aws.amazon.com/ec2/instance-types/ Amazon EC2 Instances detail page by 1,024.  Linux containers share unallocated CPU units with other containers on the container instance with the same ratio as their allocated amount. For example, if you run a single-container task on a single-core instance type with 512 CPU units specified for that container, and that is the only task running on the container instance, that container could use the full 1,024 CPU unit share at any given time. However, if you launched another copy of the same task on that container instance, each task would be guaranteed a minimum of 512 CPU units when needed, and each container could float to higher CPU usage if the other container was not using it, but if both tasks were 100% active all of the time, they would be limited to 512 CPU units. On Linux container instances, the Docker daemon on the container instance uses the CPU value to calculate the relative CPU share ratios for running containers. For more information, see https://docs.docker.com/engine/reference/run/#cpu-share-constraint CPU share constraint in the Docker documentation. The minimum valid CPU share value that the Linux kernel allows is 2. However, the CPU parameter is not required, and you can use CPU values below 2 in your container definitions. For CPU values below 2 (including null), the behavior varies based on your Amazon ECS container agent version:    Agent versions less than or equal to 1.1.0: Null and zero CPU values are passed to Docker as 0, which Docker then converts to 1,024 CPU shares. CPU values of 1 are passed to Docker as 1, which the Linux kernel converts to two CPU shares.    Agent versions greater than or equal to 1.2.0: Null, zero, and CPU values of 1 are passed to Docker as 2.   On Windows container instances, the CPU limit is enforced as an absolute limit, or a quota. Windows containers only have access to the specified amount of CPU that is described in the task definition.",
                         "type": "integer"
                     },
                     "memory": {
@@ -138,6 +138,32 @@
                         },
                         "additionalProperties": false
                     },
+                    "environmentFiles": {
+                        "description": "A list of files containing the environment variables to pass to a container. This parameter maps to the --env-file option to https://docs.docker.com/engine/reference/run/ docker run. You can specify up to ten environment files. The file must have a .env file extension. Each line in an environment file should contain an environment variable in VARIABLE=VALUE format. Lines beginning with # are treated as comments and are ignored. For more information on the environment variable file syntax, see https://docs.docker.com/compose/env-file/ Declare default environment variables in file. If there are environment variables specified using the environment parameter in a container definition, they take precedence over the variables contained within an environment file. If multiple environment files are specified that contain the same variable, they are processed from the top down. It is recommended to use unique variable names. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html Specifying Environment Variables in the Amazon Elastic Container Service Developer Guide. This field is not valid for containers in tasks using the Fargate launch type.",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "value": {
+                                    "description": "The Amazon Resource Name (ARN) of the Amazon S3 object containing the environment variable file.",
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "description": "The file type to use. The only supported value is s3.",
+                                    "type": "string",
+                                    "enum": [
+                                        "s3"
+                                    ]
+                                }
+                            },
+                            "additionalProperties": false,
+                            "required": [
+                                "value",
+                                "type"
+                            ]
+                        },
+                        "additionalProperties": false
+                    },
                     "mountPoints": {
                         "description": "The mount points for data volumes in your container. This parameter maps to Volumes in the https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate Create a container section of the https://docs.docker.com/engine/api/v1.35/ Docker Remote API and the --volume option to https://docs.docker.com/engine/reference/run/ docker run. Windows containers can mount whole directories on the same drive as $env:ProgramData. Windows containers cannot mount directories on a different drive, and mount point cannot be across drives.",
                         "type": "array",
@@ -185,11 +211,11 @@
                         "type": "object",
                         "properties": {
                             "capabilities": {
-                                "description": "The Linux capabilities for the container that are added to or dropped from the default configuration provided by Docker.  If you are using tasks that use the Fargate launch type, capabilities is supported but the add parameter is not supported. ",
+                                "description": "The Linux capabilities for the container that are added to or dropped from the default configuration provided by Docker.  For tasks that use the Fargate launch type, capabilities is supported for all platform versions but the add parameter is only supported if using platform version 1.4.0 or later. ",
                                 "type": "object",
                                 "properties": {
                                     "add": {
-                                        "description": "The Linux capabilities for the container that have been added to the default configuration provided by Docker. This parameter maps to CapAdd in the https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate Create a container section of the https://docs.docker.com/engine/api/v1.35/ Docker Remote API and the --cap-add option to https://docs.docker.com/engine/reference/run/ docker run.  If you are using tasks that use the Fargate launch type, the add parameter is not supported.  Valid values: \"ALL\" | \"AUDIT_CONTROL\" | \"AUDIT_WRITE\" | \"BLOCK_SUSPEND\" | \"CHOWN\" | \"DAC_OVERRIDE\" | \"DAC_READ_SEARCH\" | \"FOWNER\" | \"FSETID\" | \"IPC_LOCK\" | \"IPC_OWNER\" | \"KILL\" | \"LEASE\" | \"LINUX_IMMUTABLE\" | \"MAC_ADMIN\" | \"MAC_OVERRIDE\" | \"MKNOD\" | \"NET_ADMIN\" | \"NET_BIND_SERVICE\" | \"NET_BROADCAST\" | \"NET_RAW\" | \"SETFCAP\" | \"SETGID\" | \"SETPCAP\" | \"SETUID\" | \"SYS_ADMIN\" | \"SYS_BOOT\" | \"SYS_CHROOT\" | \"SYS_MODULE\" | \"SYS_NICE\" | \"SYS_PACCT\" | \"SYS_PTRACE\" | \"SYS_RAWIO\" | \"SYS_RESOURCE\" | \"SYS_TIME\" | \"SYS_TTY_CONFIG\" | \"SYSLOG\" | \"WAKE_ALARM\" ",
+                                        "description": "The Linux capabilities for the container that have been added to the default configuration provided by Docker. This parameter maps to CapAdd in the https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate Create a container section of the https://docs.docker.com/engine/api/v1.35/ Docker Remote API and the --cap-add option to https://docs.docker.com/engine/reference/run/ docker run.  The SYS_PTRACE capability is supported for tasks that use the Fargate launch type if they are also using platform version 1.4.0. The other capabilities are not supported for any platform versions.  Valid values: \"ALL\" | \"AUDIT_CONTROL\" | \"AUDIT_WRITE\" | \"BLOCK_SUSPEND\" | \"CHOWN\" | \"DAC_OVERRIDE\" | \"DAC_READ_SEARCH\" | \"FOWNER\" | \"FSETID\" | \"IPC_LOCK\" | \"IPC_OWNER\" | \"KILL\" | \"LEASE\" | \"LINUX_IMMUTABLE\" | \"MAC_ADMIN\" | \"MAC_OVERRIDE\" | \"MKNOD\" | \"NET_ADMIN\" | \"NET_BIND_SERVICE\" | \"NET_BROADCAST\" | \"NET_RAW\" | \"SETFCAP\" | \"SETGID\" | \"SETPCAP\" | \"SETUID\" | \"SYS_ADMIN\" | \"SYS_BOOT\" | \"SYS_CHROOT\" | \"SYS_MODULE\" | \"SYS_NICE\" | \"SYS_PACCT\" | \"SYS_PTRACE\" | \"SYS_RAWIO\" | \"SYS_RESOURCE\" | \"SYS_TIME\" | \"SYS_TTY_CONFIG\" | \"SYSLOG\" | \"WAKE_ALARM\" ",
                                         "type": "array",
                                         "items": {
                                             "type": "string"
@@ -316,7 +342,7 @@
                         "additionalProperties": false
                     },
                     "dependsOn": {
-                        "description": "The dependencies defined for container startup and shutdown. A container can contain multiple dependencies. When a dependency is defined for container startup, for container shutdown it is reversed. For tasks using the EC2 launch type, the container instances require at least version 1.26.0 of the container agent to enable container dependencies. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html Updating the Amazon ECS Container Agent in the Amazon Elastic Container Service Developer Guide. If you are using an Amazon ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the ecs-init package. If your container instances are launched from version 20190301 or later, then they contain the required versions of the container agent and ecs-init. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html Amazon ECS-optimized Linux AMI in the Amazon Elastic Container Service Developer Guide. This parameter is available for tasks using the Fargate launch type in the Ohio (us-east-2) region only and the task or service requires platform version 1.3.0 or later.",
+                        "description": "The dependencies defined for container startup and shutdown. A container can contain multiple dependencies. When a dependency is defined for container startup, for container shutdown it is reversed. For tasks using the EC2 launch type, the container instances require at least version 1.26.0 of the container agent to enable container dependencies. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html Updating the Amazon ECS Container Agent in the Amazon Elastic Container Service Developer Guide. If you are using an Amazon ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the ecs-init package. If your container instances are launched from version 20190301 or later, then they contain the required versions of the container agent and ecs-init. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html Amazon ECS-optimized Linux AMI in the Amazon Elastic Container Service Developer Guide. For tasks using the Fargate launch type, the task or service requires platform version 1.3.0 or later.",
                         "type": "array",
                         "items": {
                             "type": "object",
@@ -345,11 +371,11 @@
                         "additionalProperties": false
                     },
                     "startTimeout": {
-                        "description": "Time duration (in seconds) to wait before giving up on resolving dependencies for a container. For example, you specify two containers in a task definition with containerA having a dependency on containerB reaching a COMPLETE, SUCCESS, or HEALTHY status. If a startTimeout value is specified for containerB and it does not reach the desired status within that time then containerA will give up and not start. This results in the task transitioning to a STOPPED state. For tasks using the EC2 launch type, the container instances require at least version 1.26.0 of the container agent to enable a container start timeout value. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html Updating the Amazon ECS Container Agent in the Amazon Elastic Container Service Developer Guide. If you are using an Amazon ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the ecs-init package. If your container instances are launched from version 20190301 or later, then they contain the required versions of the container agent and ecs-init. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html Amazon ECS-optimized Linux AMI in the Amazon Elastic Container Service Developer Guide. This parameter is available for tasks using the Fargate launch type in the Ohio (us-east-2) region only and the task or service requires platform version 1.3.0 or later.",
+                        "description": "Time duration (in seconds) to wait before giving up on resolving dependencies for a container. For example, you specify two containers in a task definition with containerA having a dependency on containerB reaching a COMPLETE, SUCCESS, or HEALTHY status. If a startTimeout value is specified for containerB and it does not reach the desired status within that time then containerA will give up and not start. This results in the task transitioning to a STOPPED state. For tasks using the Fargate launch type, this parameter requires that the task or service uses platform version 1.3.0 or later. If this parameter is not specified, the default value of 3 minutes is used. For tasks using the EC2 launch type, if the startTimeout parameter is not specified, the value set for the Amazon ECS container agent configuration variable ECS_CONTAINER_START_TIMEOUT is used by default. If neither the startTimeout parameter or the ECS_CONTAINER_START_TIMEOUT agent configuration variable are set, then the default values of 3 minutes for Linux containers and 8 minutes on Windows containers are used. Your container instances require at least version 1.26.0 of the container agent to enable a container start timeout value. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html Updating the Amazon ECS Container Agent in the Amazon Elastic Container Service Developer Guide. If you are using an Amazon ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the ecs-init package. If your container instances are launched from version 20190301 or later, then they contain the required versions of the container agent and ecs-init. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html Amazon ECS-optimized Linux AMI in the Amazon Elastic Container Service Developer Guide.",
                         "type": "integer"
                     },
                     "stopTimeout": {
-                        "description": "Time duration (in seconds) to wait before the container is forcefully killed if it doesn't exit normally on its own. For tasks using the Fargate launch type, the max stopTimeout value is 2 minutes. This parameter is available for tasks using the Fargate launch type in the Ohio (us-east-2) region only and the task or service requires platform version 1.3.0 or later. For tasks using the EC2 launch type, the stop timeout value for the container takes precedence over the ECS_CONTAINER_STOP_TIMEOUT container agent configuration parameter, if used. Container instances require at least version 1.26.0 of the container agent to enable a container stop timeout value. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html Updating the Amazon ECS Container Agent in the Amazon Elastic Container Service Developer Guide. If you are using an Amazon ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the ecs-init package. If your container instances are launched from version 20190301 or later, then they contain the required versions of the container agent and ecs-init. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html Amazon ECS-optimized Linux AMI in the Amazon Elastic Container Service Developer Guide.",
+                        "description": "Time duration (in seconds) to wait before the container is forcefully killed if it doesn't exit normally on its own. For tasks using the Fargate launch type, the task or service requires platform version 1.3.0 or later. The max stop timeout value is 120 seconds and if the parameter is not specified, the default value of 30 seconds is used. For tasks using the EC2 launch type, if the stopTimeout parameter is not specified, the value set for the Amazon ECS container agent configuration variable ECS_CONTAINER_STOP_TIMEOUT is used by default. If neither the stopTimeout parameter or the ECS_CONTAINER_STOP_TIMEOUT agent configuration variable are set, then the default values of 30 seconds for Linux containers and 30 seconds on Windows containers are used. Your container instances require at least version 1.26.0 of the container agent to enable a container stop timeout value. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html Updating the Amazon ECS Container Agent in the Amazon Elastic Container Service Developer Guide. If you are using an Amazon ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the ecs-init package. If your container instances are launched from version 20190301 or later, then they contain the required versions of the container agent and ecs-init. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html Amazon ECS-optimized Linux AMI in the Amazon Elastic Container Service Developer Guide.",
                         "type": "integer"
                     },
                     "hostname": {
@@ -416,7 +442,7 @@
                         "additionalProperties": false
                     },
                     "dockerSecurityOptions": {
-                        "description": "A list of strings to provide custom labels for SELinux and AppArmor multi-level security systems. This field is not valid for containers in tasks using the Fargate launch type. This parameter maps to SecurityOpt in the https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate Create a container section of the https://docs.docker.com/engine/api/v1.35/ Docker Remote API and the --security-opt option to https://docs.docker.com/engine/reference/run/ docker run.  The Amazon ECS container agent running on a container instance must register with the ECS_SELINUX_CAPABLE=true or ECS_APPARMOR_CAPABLE=true environment variables before containers placed on that instance can use these security options. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-config.html Amazon ECS Container Agent Configuration in the Amazon Elastic Container Service Developer Guide.   This parameter is not supported for Windows containers. ",
+                        "description": "A list of strings to provide custom labels for SELinux and AppArmor multi-level security systems. This field is not valid for containers in tasks using the Fargate launch type. With Windows containers, this parameter can be used to reference a credential spec file when configuring a container for Active Directory authentication. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html Using gMSAs for Windows Containers in the Amazon Elastic Container Service Developer Guide. This parameter maps to SecurityOpt in the https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate Create a container section of the https://docs.docker.com/engine/api/v1.35/ Docker Remote API and the --security-opt option to https://docs.docker.com/engine/reference/run/ docker run.  The Amazon ECS container agent running on a container instance must register with the ECS_SELINUX_CAPABLE=true or ECS_APPARMOR_CAPABLE=true environment variables before containers placed on that instance can use these security options. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-config.html Amazon ECS Container Agent Configuration in the Amazon Elastic Container Service Developer Guide. ",
                         "type": "array",
                         "items": {
                             "type": "string"
@@ -441,7 +467,7 @@
                         }
                     },
                     "ulimits": {
-                        "description": "A list of ulimits to set in the container. This parameter maps to Ulimits in the https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate Create a container section of the https://docs.docker.com/engine/api/v1.35/ Docker Remote API and the --ulimit option to https://docs.docker.com/engine/reference/run/ docker run. Valid naming values are displayed in the Ulimit data type. This parameter requires version 1.18 of the Docker Remote API or greater on your container instance. To check the Docker Remote API version on your container instance, log in to your container instance and run the following command: sudo docker version --format '{{.Server.APIVersion}}'   This parameter is not supported for Windows containers. ",
+                        "description": "A list of ulimits to set in the container. If a ulimit value is specified in a task definition, it will override the default values set by Docker. This parameter maps to Ulimits in the https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate Create a container section of the https://docs.docker.com/engine/api/v1.35/ Docker Remote API and the --ulimit option to https://docs.docker.com/engine/reference/run/ docker run. Valid naming values are displayed in the Ulimit data type. This parameter requires version 1.18 of the Docker Remote API or greater on your container instance. To check the Docker Remote API version on your container instance, log in to your container instance and run the following command: sudo docker version --format '{{.Server.APIVersion}}'   This parameter is not supported for Windows containers. ",
                         "type": "array",
                         "items": {
                             "type": "object",
@@ -490,7 +516,7 @@
                         "type": "object",
                         "properties": {
                             "logDriver": {
-                                "description": "The log driver to use for the container. The valid values listed for this parameter are log drivers that the Amazon ECS container agent can communicate with by default. For tasks using the Fargate launch type, the supported log drivers are awslogs, splunk, and awsfirelens. For tasks using the EC2 launch type, the supported log drivers are awslogs, fluentd, gelf, json-file, journald, logentries, syslog, splunk, and awsfirelens. For more information about using the awslogs log driver, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html Using the awslogs Log Driver in the Amazon Elastic Container Service Developer Guide. For more information about using the awsfirelens log driver, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html Custom Log Routing in the Amazon Elastic Container Service Developer Guide.  If you have a custom driver that is not listed above that you would like to work with the Amazon ECS container agent, you can fork the Amazon ECS container agent project that is https://github.com/aws/amazon-ecs-agent available on GitHub and customize it to work with that driver. We encourage you to submit pull requests for changes that you would like to have included. However, Amazon Web Services does not currently support running modified copies of this software.  This parameter requires version 1.18 of the Docker Remote API or greater on your container instance. To check the Docker Remote API version on your container instance, log in to your container instance and run the following command: sudo docker version --format '{{.Server.APIVersion}}' ",
+                                "description": "The log driver to use for the container. The valid values listed earlier are log drivers that the Amazon ECS container agent can communicate with by default. For tasks using the Fargate launch type, the supported log drivers are awslogs, splunk, and awsfirelens. For tasks using the EC2 launch type, the supported log drivers are awslogs, fluentd, gelf, json-file, journald, logentries,syslog, splunk, and awsfirelens. For more information about using the awslogs log driver, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html Using the awslogs Log Driver in the Amazon Elastic Container Service Developer Guide. For more information about using the awsfirelens log driver, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html Custom Log Routing in the Amazon Elastic Container Service Developer Guide.  If you have a custom driver that is not listed, you can fork the Amazon ECS container agent project that is https://github.com/aws/amazon-ecs-agent available on GitHub and customize it to work with that driver. We encourage you to submit pull requests for changes that you would like to have included. However, we do not currently provide support for running modified copies of this software. ",
                                 "type": "string",
                                 "enum": [
                                     "json-file",
@@ -542,7 +568,7 @@
                         ]
                     },
                     "healthCheck": {
-                        "description": "The health check command and associated configuration parameters for the container. This parameter maps to HealthCheck in the https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate Create a container section of the https://docs.docker.com/engine/api/v1.35/ Docker Remote API and the HEALTHCHECK parameter of https://docs.docker.com/engine/reference/run/ docker run.",
+                        "description": "The container health check command and associated configuration parameters for the container. This parameter maps to HealthCheck in the https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate Create a container section of the https://docs.docker.com/engine/api/v1.35/ Docker Remote API and the HEALTHCHECK parameter of https://docs.docker.com/engine/reference/run/ docker run.",
                         "type": "object",
                         "properties": {
                             "command": {
@@ -634,7 +660,7 @@
                                 ]
                             },
                             "options": {
-                                "description": "The options to use when configuring the log router. This field is optional and can be used to add additional metadata, such as the task, task definition, cluster, and container instance details to the log event. If specified, the syntax to use is \"options\":{\"enable-ecs-log-metadata\":\"true|false\"}.",
+                                "description": "The options to use when configuring the log router. This field is optional and can be used to specify a custom configuration file or to add additional metadata, such as the task, task definition, cluster, and container instance details to the log event. If specified, the syntax to use is \"options\":{\"enable-ecs-log-metadata\":\"true|false\",\"config-file-type:\"s3|file\",\"config-file-value\":\"arn:aws:s3:::mybucket/fluent.conf|filepath\"}. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html#firelens-taskdef Creating a Task Definition that Uses a FireLens Configuration in the Amazon Elastic Container Service Developer Guide.",
                                 "type": "object",
                                 "properties": {
                                     "insert-key": {
@@ -664,7 +690,7 @@
                         "type": "string"
                     },
                     "host": {
-                        "description": "This parameter is specified when you are using bind mount host volumes. Bind mount host volumes are supported when you are using either the EC2 or Fargate launch types. The contents of the host parameter determine whether your bind mount host volume persists on the host container instance and where it is stored. If the host parameter is empty, then the Docker daemon assigns a host path for your data volume. However, the data is not guaranteed to persist after the containers associated with it stop running. Windows containers can mount whole directories on the same drive as $env:ProgramData. Windows containers cannot mount directories on a different drive, and mount point cannot be across drives. For example, you can mount C:\\my\\path:C:\\my\\path and D:\\:D:\\, but not D:\\my\\path:C:\\my\\path or D:\\:C:\\my\\path.",
+                        "description": "This parameter is specified when you are using bind mount host volumes. The contents of the host parameter determine whether your bind mount host volume persists on the host container instance and where it is stored. If the host parameter is empty, then the Docker daemon assigns a host path for your data volume. However, the data is not guaranteed to persist after the containers associated with it stop running. Windows containers can mount whole directories on the same drive as $env:ProgramData. Windows containers cannot mount directories on a different drive, and mount point cannot be across drives. For example, you can mount C:\\my\\path:C:\\my\\path and D:\\:D:\\, but not D:\\my\\path:C:\\my\\path or D:\\:C:\\my\\path.",
                         "type": "object",
                         "properties": {
                             "sourcePath": {
@@ -675,7 +701,7 @@
                         "additionalProperties": false
                     },
                     "dockerVolumeConfiguration": {
-                        "description": "This parameter is specified when you are using Docker volumes. Docker volumes are only supported when you are using the EC2 launch type. Windows containers only support the use of the local driver. To use bind mounts, specify a host instead.",
+                        "description": "This parameter is specified when you are using Docker volumes. Docker volumes are only supported when you are using the EC2 launch type. Windows containers only support the use of the local driver. To use bind mounts, specify the host parameter instead.",
                         "type": "object",
                         "properties": {
                             "scope": {
@@ -714,6 +740,55 @@
                             }
                         },
                         "additionalProperties": false
+                    },
+                    "efsVolumeConfiguration": {
+                        "description": "This parameter is specified when you are using an Amazon Elastic File System file system for task storage.",
+                        "type": "object",
+                        "properties": {
+                            "fileSystemId": {
+                                "description": "The Amazon EFS file system ID to use.",
+                                "type": "string"
+                            },
+                            "rootDirectory": {
+                                "description": "The directory within the Amazon EFS file system to mount as the root directory inside the host. If this parameter is omitted, the root of the Amazon EFS volume will be used. Specifying / will have the same effect as omitting this parameter.",
+                                "type": "string"
+                            },
+                            "transitEncryption": {
+                                "description": "Whether or not to enable encryption for Amazon EFS data in transit between the Amazon ECS host and the Amazon EFS server. Transit encryption must be enabled if Amazon EFS IAM authorization is used. If this parameter is omitted, the default value of DISABLED is used. For more information, see https://docs.aws.amazon.com/efs/latest/ug/encryption-in-transit.html Encrypting Data in Transit in the Amazon Elastic File System User Guide.",
+                                "type": "string",
+                                "enum": [
+                                    "ENABLED",
+                                    "DISABLED"
+                                ]
+                            },
+                            "transitEncryptionPort": {
+                                "description": "The port to use when sending encrypted data between the Amazon ECS host and the Amazon EFS server. If you do not specify a transit encryption port, it will use the port selection strategy that the Amazon EFS mount helper uses. For more information, see https://docs.aws.amazon.com/efs/latest/ug/efs-mount-helper.html EFS Mount Helper in the Amazon Elastic File System User Guide.",
+                                "type": "integer"
+                            },
+                            "authorizationConfig": {
+                                "description": "The authorization configuration details for the Amazon EFS file system.",
+                                "type": "object",
+                                "properties": {
+                                    "accessPointId": {
+                                        "description": "The Amazon EFS access point ID to use. If an access point is specified, the root directory value specified in the EFSVolumeConfiguration will be relative to the directory set for the access point. If an access point is used, transit encryption must be enabled in the EFSVolumeConfiguration. For more information, see https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html Working with Amazon EFS Access Points in the Amazon Elastic File System User Guide.",
+                                        "type": "string"
+                                    },
+                                    "iam": {
+                                        "description": "Whether or not to use the Amazon ECS task IAM role defined in a task definition when mounting the Amazon EFS file system. If enabled, transit encryption must be enabled in the EFSVolumeConfiguration. If this parameter is omitted, the default value of DISABLED is used. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#efs-volume-accesspoints Using Amazon EFS Access Points in the Amazon Elastic Container Service Developer Guide.",
+                                        "type": "string",
+                                        "enum": [
+                                            "ENABLED",
+                                            "DISABLED"
+                                        ]
+                                    }
+                                },
+                                "additionalProperties": false
+                            }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                            "fileSystemId"
+                        ]
                     }
                 },
                 "additionalProperties": false
@@ -875,5 +950,5 @@
         "containerDefinitions"
     ],
     "additionalProperties": false,
-    "description": "Intellisense for Amazon ECS Task Definition schema version v1.1.0, based on AWS SDK for Go version v1.25.2."
+    "description": "Intellisense for Amazon ECS Task Definition schema version v1.2.0, based on AWS SDK for Go version v1.33.9."
 }
