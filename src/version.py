@@ -5,5 +5,5 @@
 See the most recent version number for AWS SDK Go here:
 https://github.com/aws/aws-sdk-go/releases
 """
-schema_version = 'v1.2.0'
-sdk_go_version = 'v1.33.9'
+schema_version = 'v1.3.0'
+sdk_go_version = 'v1.45.12'
