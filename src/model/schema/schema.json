@@ -912,15 +912,13 @@
                         "description": "One part of a key-value pair that make up a tag. A key is a general label that acts like a category for more specific tag values.",
                         "type": "string",
                         "maxLength": 128,
-                        "minLength": 1,
-                        "pattern": "^([\\p{L}\\p{Z}\\p{N}_.:/=+\\-@]*)$"
+                        "minLength": 1
                     },
                     "value": {
                         "description": "The optional part of a key-value pair that make up a tag. A value acts as a descriptor within a tag category (key).",
                         "type": "string",
                         "maxLength": 256,
-                        "minLength": 0,
-                        "pattern": "^([\\p{L}\\p{Z}\\p{N}_.:/=+\\-@]*)$"
+                        "minLength": 0
                     }
                 },
                 "additionalProperties": false
