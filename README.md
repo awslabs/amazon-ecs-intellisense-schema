@@ -48,9 +48,11 @@ Here is a VSCode setup integration example:
 
 ## How to run this tool?
 1. Install dependencies with `pip install -r requirements.txt`
-2. Run `python3 src/main.py`  
-NOTE: If you run into `ModuleNotFoundError: No module named 'src'`. Then, run `export PYTHONPATH="${PYTHONPATH}:/path/to/src/"`
-3. The schema should be generated under `./src/model/schema/`
+2. To update `api.json` and `docs.json` for a specific Go SDK version Run `./update.sh SCHEMA_VERSION GO_SDK_VERSION`
+3. Update the `schema_version` and `sdk_go_version` values in `src/version.py` file accordingly.
+4. Run `python3 src/main.py`  
+   NOTE: If you run into `ModuleNotFoundError: No module named 'src'`. Then, run `export PYTHONPATH="${PYTHONPATH}:/path/to/src/"`
+5. The schema should be generated under `./src/model/schema/`
 
 ## License
 
