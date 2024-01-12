@@ -87,7 +87,7 @@
                                     "type": "integer"
                                 },
                                 "protocol": {
-                                    "description": "The protocol used for the port mapping. Valid values are tcp and udp. The default is tcp.",
+                                    "description": "The protocol used for the port mapping. Valid values are tcp and udp. The default is tcp. protocol is immutable in a Service Connect service. Updating this field requires a service deletion and redeployment. ",
                                     "type": "string",
                                     "enum": [
                                         "tcp",
@@ -99,7 +99,7 @@
                                     "type": "string"
                                 },
                                 "appProtocol": {
-                                    "description": "The application protocol that's used for the port mapping. This parameter only applies to Service Connect. We recommend that you set this parameter to be consistent with the protocol that your application uses. If you set this parameter, Amazon ECS adds protocol-specific connection handling to the Service Connect proxy. If you set this parameter, Amazon ECS adds protocol-specific telemetry in the Amazon ECS console and CloudWatch. If you don't set a value for this parameter, then TCP is used. However, Amazon ECS doesn't add protocol-specific telemetry for TCP. Tasks that run in a namespace can use short names to connect to services in the namespace. Tasks can connect to services across all of the clusters in the namespace. Tasks connect through a managed proxy container that collects logs and metrics for increased visibility. Only the tasks that Amazon ECS services create are supported with Service Connect. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect.html Service Connect in the Amazon Elastic Container Service Developer Guide.",
+                                    "description": "The application protocol that's used for the port mapping. This parameter only applies to Service Connect. We recommend that you set this parameter to be consistent with the protocol that your application uses. If you set this parameter, Amazon ECS adds protocol-specific connection handling to the Service Connect proxy. If you set this parameter, Amazon ECS adds protocol-specific telemetry in the Amazon ECS console and CloudWatch. If you don't set a value for this parameter, then TCP is used. However, Amazon ECS doesn't add protocol-specific telemetry for TCP.  appProtocol is immutable in a Service Connect service. Updating this field requires a service deletion and redeployment. Tasks that run in a namespace can use short names to connect to services in the namespace. Tasks can connect to services across all of the clusters in the namespace. Tasks connect through a managed proxy container that collects logs and metrics for increased visibility. Only the tasks that Amazon ECS services create are supported with Service Connect. For more information, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect.html Service Connect in the Amazon Elastic Container Service Developer Guide.",
                                     "type": "string",
                                     "enum": [
                                         "http",
@@ -108,7 +108,7 @@
                                     ]
                                 },
                                 "containerPortRange": {
-                                    "description": "The port number range on the container that's bound to the dynamically mapped host port range.  The following rules apply when you specify a containerPortRange:   You must use either the bridge network mode or the awsvpc network mode.   This parameter is available for both the EC2 and Fargate launch types.   This parameter is available for both the Linux and Windows operating systems.   The container instance must have at least version 1.67.0 of the container agent and at least version 1.67.0-1 of the ecs-init package    You can specify a maximum of 100 port ranges per container.   You do not specify a hostPortRange. The value of the hostPortRange is set as follows:   For containers in a task with the awsvpc network mode, the hostPort is set to the same value as the containerPort. This is a static mapping strategy.   For containers in a task with the bridge network mode, the Amazon ECS agent finds open host ports from the default ephemeral range and passes it to docker to bind them to the container ports.     The containerPortRange valid values are between 1 and 65535.   A port can only be included in one port mapping per container.   You cannot specify overlapping port ranges.   The first port in the range must be less than last port in the range.   Docker recommends that you turn off the docker-proxy in the Docker daemon config file when you have a large number of ports. For more information, see https://github.com/moby/moby/issues/11185  Issue #11185 on the Github website. For information about how to turn off the docker-proxy in the Docker daemon config file, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/bootstrap_container_instance.html#bootstrap_docker_daemon Docker daemon in the Amazon ECS Developer Guide.   You can call https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DescribeTasks.html  DescribeTasks  to view the hostPortRange which are the host ports that are bound to the container ports.",
+                                    "description": "The port number range on the container that's bound to the dynamically mapped host port range.  The following rules apply when you specify a containerPortRange:   You must use either the bridge network mode or the awsvpc network mode.   This parameter is available for both the EC2 and Fargate launch types.   This parameter is available for both the Linux and Windows operating systems.   The container instance must have at least version 1.67.0 of the container agent and at least version 1.67.0-1 of the ecs-init package    You can specify a maximum of 100 port ranges per container.   You do not specify a hostPortRange. The value of the hostPortRange is set as follows:   For containers in a task with the awsvpc network mode, the hostPortRange is set to the same value as the containerPortRange. This is a static mapping strategy.   For containers in a task with the bridge network mode, the Amazon ECS agent finds open host ports from the default ephemeral range and passes it to docker to bind them to the container ports.     The containerPortRange valid values are between 1 and 65535.   A port can only be included in one port mapping per container.   You cannot specify overlapping port ranges.   The first port in the range must be less than last port in the range.   Docker recommends that you turn off the docker-proxy in the Docker daemon config file when you have a large number of ports. For more information, see https://github.com/moby/moby/issues/11185  Issue #11185 on the Github website. For information about how to turn off the docker-proxy in the Docker daemon config file, see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/bootstrap_container_instance.html#bootstrap_docker_daemon Docker daemon in the Amazon ECS Developer Guide.   You can call https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DescribeTasks.html  DescribeTasks  to view the hostPortRange which are the host ports that are bound to the container ports.",
                                     "type": "string"
                                 }
                             },
@@ -711,7 +711,7 @@
                 "type": "object",
                 "properties": {
                     "name": {
-                        "description": "The name of the volume. Up to 255 letters (uppercase and lowercase), numbers, underscores, and hyphens are allowed. This name is referenced in the sourceVolume parameter of container definition mountPoints. This is required wwhen you use an Amazon EFS volume.",
+                        "description": "The name of the volume. Up to 255 letters (uppercase and lowercase), numbers, underscores, and hyphens are allowed. When using a volume configured at launch, the name is required and must also be specified as the volume name in the ServiceVolumeConfiguration or TaskVolumeConfiguration parameter when creating your service or standalone task. For all other types of volumes, this name is referenced in the sourceVolume parameter of the mountPoints object in the container definition. When a volume is using the efsVolumeConfiguration, the name is required.",
                         "type": "string"
                     },
                     "host": {
@@ -853,6 +853,10 @@
                             "rootDirectory",
                             "authorizationConfig"
                         ]
+                    },
+                    "configuredAtLaunch": {
+                        "description": "Indicates whether the volume should be configured at launch time. This is used to create Amazon EBS volumes for standalone tasks or tasks created as part of a service. Each task definition revision may only have one volume configured at launch in the volume configuration. To configure a volume at launch time, use this task definition revision and specify a volumeConfigurations object when calling the CreateService, UpdateService, RunTask or StartTask APIs.",
+                        "type": "boolean"
                     }
                 },
                 "additionalProperties": false
@@ -1058,5 +1062,5 @@
         "containerDefinitions"
     ],
     "additionalProperties": false,
-    "description": "Intellisense for Amazon ECS Task Definition schema version v1.3.0, based on AWS SDK for Go version v1.45.12."
+    "description": "Intellisense for Amazon ECS Task Definition schema version v1.4.0, based on AWS SDK for Go version v1.49.19."
 }
